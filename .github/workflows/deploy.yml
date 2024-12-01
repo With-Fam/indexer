@@ -39,13 +39,13 @@ jobs:
           script: |
             echo "Connected to Droplet"
             # Create app directory if it doesn't exist
-            mkdir -p ~/myco-rewards-indexer
-            cd ~/myco-rewards-indexer
+            mkdir -p ~/indexer
+            cd ~/indexer
 
             # Initialize git repository if it doesn't exist
             if [ ! -d .git ]; then
               git init
-              git remote add origin https://github.com/SweetmanTech/myco-rewards-indexer.git
+              git remote add origin https://github.com/With-Fam/indexer.git
             fi
 
             # Fetch latest code and handle local changes
@@ -64,11 +64,7 @@ jobs:
             nvm use 20
 
             # Install dependencies
-            npm install
+            bun install
 
-            # Start or restart the app using PM2
-            if pm2 list | grep -q "myco-rewards-indexer"; then
-              pm2 restart myco-rewards-indexer --update-env --cwd ~/myco-rewards-indexer
-            else
-              pm2 start npm --name "myco-rewards-indexer" --cwd ~/myco-rewards-indexer -- run start
-            fi
+            # Start using PM2
+            pm2 restart ecosystem.config.cjs --update-env
