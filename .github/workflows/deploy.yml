@@ -24,6 +24,12 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Debug Secrets
+        run: |
+          echo "DROPLET_IP is set: ${{ secrets.DROPLET_IP != '' }}"
+          echo "DROPLET_USER is set: ${{ secrets.DROPLET_USER != '' }}"
+          echo "DROPLET_PASSWORD is set: ${{ secrets.DROPLET_PASSWORD != '' }}"
+
       - name: Deploy to DigitalOcean Droplet
         uses: appleboy/ssh-action@master
         with:
@@ -66,21 +72,6 @@ jobs:
 
             # Install dependencies using Bun
             bun install
-
-            # Create PM2 ecosystem file if it doesn't exist
-            if [ ! -f ecosystem.config.cjs ]; then
-              echo "module.exports = {
-                apps: [{
-                  name: 'indexer',
-                  script: 'bun',
-                  args: 'start',
-                  watch: false,
-                  env: {
-                    NODE_ENV: 'production'
-                  }
-                }]
-              }" > ecosystem.config.cjs
-            fi
 
             # Ensure PM2 is installed
             npm install -g pm2
