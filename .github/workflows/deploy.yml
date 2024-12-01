@@ -16,19 +16,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm install
 
       - name: Run tests
         run: npm test
-
-      - name: Debug Secrets
-        run: |
-          echo "DROPLET_IP is set: ${{ secrets.DROPLET_IP != '' }}"
-          echo "DROPLET_USER is set: ${{ secrets.DROPLET_USER != '' }}"
-          echo "DROPLET_PASSWORD is set: ${{ secrets.DROPLET_PASSWORD != '' }}"
 
       - name: Deploy to DigitalOcean Droplet
         uses: appleboy/ssh-action@master
@@ -59,12 +53,37 @@ jobs:
             echo "Git status:"
             git status
 
-            # Ensure correct Node.js version
+            # Ensure correct Node.js version and environment
             source ~/.nvm/nvm.sh
             nvm use 20
 
-            # Install dependencies
+            # Ensure Bun is installed and in PATH
+            source ~/.bashrc
+            if ! command -v bun &> /dev/null; then
+              curl -fsSL https://bun.sh/install | bash
+              source ~/.bashrc
+            fi
+
+            # Install dependencies using Bun
             bun install
 
-            # Start using PM2
+            # Create PM2 ecosystem file if it doesn't exist
+            if [ ! -f ecosystem.config.cjs ]; then
+              echo "module.exports = {
+                apps: [{
+                  name: 'indexer',
+                  script: 'bun',
+                  args: 'start',
+                  watch: false,
+                  env: {
+                    NODE_ENV: 'production'
+                  }
+                }]
+              }" > ecosystem.config.cjs
+            fi
+
+            # Ensure PM2 is installed
+            npm install -g pm2
+
+            # Start/Restart the application
             pm2 restart ecosystem.config.cjs --update-env
