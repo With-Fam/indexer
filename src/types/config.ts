@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import type { Address } from "viem";
 
 export type NetworkConfig = {
   http: readonly string[];
@@ -12,6 +12,7 @@ export type Networks = {
 export type Config = {
   stackApiKey: string | undefined;
   stackApiUrl: string;
+  stackPointSystemId: number;
   networks: Networks;
   contracts: {
     manageFamAuthority: Address;
