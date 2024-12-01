@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm install
@@ -59,12 +59,22 @@ jobs:
             echo "Git status:"
             git status
 
-            # Ensure correct Node.js version
+            # Ensure correct Node.js version and environment
             source ~/.nvm/nvm.sh
             nvm use 20
 
-            # Install dependencies
+            # Ensure Bun is installed and in PATH
+            source ~/.bashrc
+            if ! command -v bun &> /dev/null; then
+              curl -fsSL https://bun.sh/install | bash
+              source ~/.bashrc
+            fi
+
+            # Install dependencies using Bun
             bun install
 
-            # Start using PM2
+            # Ensure PM2 is installed
+            npm install -g pm2
+
+            # Start/Restart the application
             pm2 restart ecosystem.config.cjs --update-env
