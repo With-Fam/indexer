@@ -5,9 +5,9 @@ import {
   PublicClient,
 } from "viem";
 import { EventHandlerRegistry } from "./core/EventHandlerRegistry";
-import { handleHypersubSet } from "./handlers/PartyCardHandler";
+import { handleHypersubSet } from "./handlers/HypersubSetHandler";
 import { config } from "./utils/config";
-import { ManageFamAuthorityAbi } from "../lib/abi/ManageFamAuthorityAbi";
+import { ManageFamAuthorityAbi } from "./abis/ManageFamAuthorityAbi";
 
 async function createWebSocketClient(network: string): Promise<PublicClient> {
   const wsUrl = config.networks[network].ws;
