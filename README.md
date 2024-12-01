@@ -1,80 +1,114 @@
-# ManageFamAuthorityIndexer
+# ManageFamAuthorityIndexer 🔍
 
-Indexer for the ManageFamAuthority smart contract to manage Subscription events with Party access management.
+A real-time event indexer for the ManageFamAuthority smart contract, tracking Subscription events with Party access management.
 
-To install dependencies:
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js v20 or later
+- Bun package manager
+- A `.env` file with required configuration (see Configuration section)
+
+### Installation
 
 ```bash
 bun install
 ```
 
-To run:
+### Running the Indexer
 
 ```bash
-bun start
+bun start    # Start in production mode
+bun dev      # Start in development mode with auto-reload
 ```
 
-## Documentation
+## ⚙️ Configuration
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+STACK_API_KEY=your_stack_api_key
+STACK_SYSTEM_ID=your_system_id
+```
+
+## 🏗️ Project Structure
+
+- `src/index.ts` - Main application entry point
+- `src/services/` - Core services (WebSocket, event watching)
+- `src/utils/` - Utility functions and configuration
+- `src/types/` - TypeScript type definitions
+- `src/abis/` - Smart contract ABIs
+
+## 📚 Documentation
 
 - [Product Requirements Document (PRD)](./requirements.md)
 
-## Digital Ocean Droplet Setup
+## 🛠️ Development
 
-### 1. Create and Access Your Droplet
+### Building the Project
 
-1. Create a new Ubuntu droplet on Digital Ocean
-2. Access your droplet via SSH:
+```bash
+bun run build
+```
+
+### Running Tests
+
+```bash
+bun test
+```
+
+## 🚀 Deployment
+
+### Digital Ocean Droplet Setup
+
+1. **Create and Access Your Droplet**
+
    ```bash
    ssh root@your_droplet_ip
    ```
 
-### 2. Install Required Software
-
-1. Install Node Version Manager (nvm):
+2. **Install Required Software**
 
    ```bash
+   # Install NVM
    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
    source ~/.bashrc
-   ```
 
-2. Install Node.js 20:
-
-   ```bash
+   # Install Node.js 20
    nvm install 20
    nvm use 20
-   ```
-
-3. Install Bun:
-
-   ```bash
-   # Install unzip (required for Bun installation)
-   apt-get update && apt-get install unzip -y
 
    # Install Bun
    curl -fsSL https://bun.sh/install | bash
    source ~/.bashrc
-   ```
 
-4. Install PM2 globally:
-   ```bash
+   # Install PM2
    npm install -g pm2
    ```
 
-### 3. Configure GitHub Actions
+3. **GitHub Actions Setup**
+   Add these secrets to your repository:
+   - `DROPLET_IP`
+   - `DROPLET_USER`
+   - `DROPLET_PASSWORD`
 
-1. Add the following secrets to your GitHub repository:
-   - `DROPLET_IP`: Your Digital Ocean droplet's IP address
-   - `DROPLET_USER`: Your droplet's username (usually 'root')
-   - `DROPLET_PASSWORD`: Your droplet's password
+## 🔄 Automatic Deployment
 
-### 4. Verify Installation
+The project uses GitHub Actions for CI/CD:
 
-Run these commands to verify everything is installed correctly:
+- Pushes to `main` or `test` branches trigger automatic deployment
+- PM2 manages the application with automatic restarts every 12 hours
+- WebSocket connections are properly managed with cleanup on shutdown
 
-```bash
-nvm --version
-bun --version
-pm2 --version
-```
+## 🤝 Contributing
 
-Now your Droplet is ready for the CI/CD pipeline to deploy the application.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

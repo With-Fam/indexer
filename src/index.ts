@@ -19,7 +19,6 @@ async function main() {
       )
     );
 
-    // Handle cleanup on process exit
     process.on("SIGINT", () => {
       console.log("Cleaning up WebSocket connections...");
       unwatchFns.forEach((unwatch) => unwatch());
