@@ -4,14 +4,14 @@ import type { Address } from "viem";
 
 dotenv.config();
 
-if (!process.env.STACK_POINT_SYSTEM_ID) {
-  throw new Error("STACK_POINT_SYSTEM_ID environment variable is required");
+if (!process.env.STACK_SYSTEM_ID) {
+  throw new Error("STACK_SYSTEM_ID environment variable is required");
 }
 
 export const config: Config = {
   stackApiKey: process.env.STACK_API_KEY,
   stackApiUrl: "https://track.stack.so/event",
-  stackPointSystemId: parseInt(process.env.STACK_POINT_SYSTEM_ID, 10),
+  stackPointSystemId: parseInt(process.env.STACK_SYSTEM_ID, 10),
   networks: {
     base: {
       http: [

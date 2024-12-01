@@ -12,6 +12,7 @@ export async function handleHypersubSet(event: BaseEvent): Promise<void> {
       points: 1,
       metadata: {
         hypersub: event.args.hypersub,
+        party: event.args.party,
         network: event.network,
         timestamp: new Date().toISOString(),
       },
