@@ -1,7 +1,7 @@
 import { createPublicClient, webSocket, PublicClient } from "viem";
 import { config } from "../utils/config";
 
-const RECONNECT_DELAY = 5000; // 5 seconds
+const RECONNECT_DELAY = 5000;
 const MAX_RETRIES = 5;
 
 export async function createWebSocketClient(
