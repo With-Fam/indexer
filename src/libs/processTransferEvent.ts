@@ -3,9 +3,8 @@ import { HypersubAbi } from "../abis/HypersubAbi";
 
 export const processTransferEvent = async (log: Log) => {
   try {
-    // Check if this is an NFT transfer (should have 4 topics: event signature + 3 indexed params)
     if (log.topics.length !== 4) {
-      return; // Skip non-NFT transfers
+      return; // Skip Hypersub NFT transfers
     }
 
     const { args } = decodeEventLog({
@@ -17,7 +16,7 @@ export const processTransferEvent = async (log: Log) => {
 
     // Type guard to ensure we have the NFT transfer event args
     if (!("tokenId" in args)) {
-      return; // Skip if not an NFT transfer
+      return; // Skip if not a Hypersub NFT transfer
     }
 
     console.log("Transfer Event Processed:", {
