@@ -27,6 +27,7 @@ export const processTransferEvent = async (log: Log) => {
     if (parties.length === 0) {
       return;
     }
+    console.log("parties", parties);
 
     console.log("Processing Hypersub Transfer Event:", {
       from: args.from,
