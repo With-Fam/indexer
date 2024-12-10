@@ -14,8 +14,6 @@ export const processTransferEvent = async (log: Log) => {
       topics: log.topics,
       eventName: "Transfer",
     });
-    console.log("hypersub", log.address);
-    console.log("args", args);
 
     // Type guard to ensure we have the NFT transfer event args
     if (!("tokenId" in args)) {
