@@ -2,6 +2,7 @@ import { EventHandlerRegistry } from "./core/EventHandlerRegistry";
 import { handleHypersubSet } from "./handlers/HypersubSetHandler";
 import { config } from "./utils/config";
 import { watchNetworkEvents } from "./services/eventWatcher";
+import { startEventListeners } from "./services/rpcEventListener";
 
 async function main() {
   const registry = new EventHandlerRegistry();
@@ -13,17 +14,27 @@ async function main() {
       registry.getRegisteredEvents()
     );
 
-    const unwatchFns = await Promise.all(
-      Object.keys(config.networks).map((network) =>
-        watchNetworkEvents(network, registry)
-      )
-    );
+    // Start both WebSocket and RPC event listeners
+    const [unwatchWebSocket, unwatchTransfer] = await Promise.all([
+      Promise.all(
+        Object.keys(config.networks).map((network) =>
+          watchNetworkEvents(network, registry)
+        )
+      ),
+      startEventListeners(),
+    ]);
 
-    process.on("SIGINT", () => {
-      console.log("Cleaning up WebSocket connections...");
-      unwatchFns.forEach((unwatch) => unwatch());
+    // Cleanup function for both WebSocket and RPC connections
+    const cleanup = () => {
+      console.log("Cleaning up connections...");
+      unwatchWebSocket.forEach((unwatch) => unwatch());
+      unwatchTransfer();
       process.exit(0);
-    });
+    };
+
+    // Handle graceful shutdown
+    process.on("SIGINT", cleanup);
+    process.on("SIGTERM", cleanup);
 
     console.log("Watching for new events. Press Ctrl+C to exit.");
   } catch (error) {
