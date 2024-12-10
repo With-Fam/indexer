@@ -6,7 +6,7 @@ export async function handleHypersubSet(event: BaseEvent): Promise<void> {
   await trackEvents(event.network, [
     {
       name: `HypersubSet-${event.network}`,
-      account: event.args.party,
+      account: event.args.hypersub,
       uniqueId: event.log.id,
       pointSystemId: config.stackPointSystemId,
       points: 1,
