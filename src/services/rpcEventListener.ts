@@ -7,7 +7,7 @@ export const startEventListeners = async () => {
 
     // Start pollers for both networks
     const cleanupFns = [
-      //   await pollTransferEvents(baseClient),
+      await pollTransferEvents(baseClient),
       await pollTransferEvents(baseSepoliaClient),
     ];
 
