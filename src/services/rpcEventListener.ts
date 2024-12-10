@@ -1,23 +1,26 @@
-import { createPublicClient, http, decodeEventLog, type Log } from "viem";
+import {
+  createPublicClient,
+  http,
+  decodeEventLog,
+  type Log,
+  PublicClient,
+  Chain,
+} from "viem";
 import { base, baseSepolia } from "viem/chains";
 import { HypersubAbi } from "../abis/HypersubAbi";
 
-// Configure clients for each network
-const baseClient = createPublicClient({
-  chain: base,
-  transport: http(),
-  batch: {
-    multicall: true,
-  },
-});
+const getPublicClient = (chain: Chain) => {
+  return createPublicClient({
+    chain,
+    transport: http(),
+    batch: {
+      multicall: true,
+    },
+  }) as PublicClient;
+};
 
-const baseSepoliaClient = createPublicClient({
-  chain: baseSepolia,
-  transport: http(),
-  batch: {
-    multicall: true,
-  },
-});
+const baseClient = getPublicClient(base);
+const baseSepoliaClient = getPublicClient(baseSepolia);
 
 // Find Transfer event in ABI
 const transferEvent = HypersubAbi.find(
@@ -40,6 +43,7 @@ const processTransferEvent = async (log: Log) => {
       abi: HypersubAbi,
       data: log.data,
       topics: log.topics,
+      eventName: "Transfer",
     });
 
     // Type guard to ensure we have the NFT transfer event args
@@ -70,12 +74,12 @@ const processTransferEvent = async (log: Log) => {
 
 // Function to poll for Transfer events on a specific network
 const pollTransferEvents = async (
-  client: typeof baseClient,
+  client: PublicClient,
   pollInterval = 2000
 ) => {
   let latestProcessedBlock = await client.getBlockNumber();
   console.log(
-    `Starting to poll from block ${latestProcessedBlock} on ${client.chain.name}`
+    `Starting to poll from block ${latestProcessedBlock} on ${client.chain?.name}`
   );
 
   const intervalId = setInterval(async () => {
@@ -84,7 +88,7 @@ const pollTransferEvents = async (
 
       if (currentBlock > latestProcessedBlock) {
         console.log(
-          `Checking blocks ${latestProcessedBlock} to ${currentBlock} on ${client.chain.name}`
+          `Checking blocks ${latestProcessedBlock} to ${currentBlock} on ${client.chain?.name}`
         );
 
         const logs = await client.getLogs({
@@ -101,14 +105,14 @@ const pollTransferEvents = async (
         latestProcessedBlock = currentBlock;
       }
     } catch (error) {
-      console.error(`Error polling events on ${client.chain.name}:`, error);
+      console.error(`Error polling events on ${client.chain?.name}:`, error);
     }
   }, pollInterval);
 
   // Return cleanup function
   return () => {
     clearInterval(intervalId);
-    console.log(`Stopped polling on ${client.chain.name}`);
+    console.log(`Stopped polling on ${client.chain?.name}`);
   };
 };
 
