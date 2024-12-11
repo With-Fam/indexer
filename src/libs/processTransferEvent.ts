@@ -16,20 +16,15 @@ export const processTransferEvent = async (log: Log) => {
       eventName: "Transfer",
     });
 
-    // Type guard to ensure we have the NFT transfer event args
+    // Type guard to ensure we have the Hypersub NFT transfer event args
     if (!("tokenId" in args)) {
       return; // Skip if not a Hypersub NFT transfer
     }
 
-    // Get associated parties for this hypersub
     const parties = await getPartiesForHypersubSet(log.address);
-
-    // Skip if this hypersub has no associated parties
     if (parties.length === 0) {
       return;
     }
-    console.log("parties", parties);
-
     console.log("Processing Hypersub Transfer Event:", {
       from: args.from,
       to: args.to,
@@ -39,8 +34,6 @@ export const processTransferEvent = async (log: Log) => {
       address: log.address,
       associatedParties: parties.map((p) => p.party),
     });
-
-    // Add party cards for each associated party
     for (const { party } of parties) {
       try {
         const txHash = await addPartyCards(party, args.to);
@@ -49,7 +42,6 @@ export const processTransferEvent = async (log: Log) => {
         );
       } catch (error) {
         console.error(`Failed to add party card for party ${party}:`, error);
-        // Continue processing other parties even if one fails
       }
     }
   } catch (error) {
