@@ -3,6 +3,8 @@ import { handleHypersubSet } from "./handlers/HypersubSetHandler";
 import { config } from "./utils/config";
 import { watchNetworkEvents } from "./services/eventWatcher";
 import { startEventListeners } from "./services/rpcEventListener";
+import { processTransferEvent } from "./libs/processTransferEvent";
+import { SubscriptionPollingService } from "./services/subscriptionPollingService";
 
 async function main() {
   const registry = new EventHandlerRegistry();
@@ -41,5 +43,25 @@ async function main() {
     console.error("Error in indexer:", error);
   }
 }
+
+// Start the subscription polling service
+const subscriptionPollingService = new SubscriptionPollingService();
+subscriptionPollingService.start();
+
+// Handle process termination
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM signal");
+  subscriptionPollingService.stop();
+  process.exit(0);
+});
+
+process.on("SIGINT", () => {
+  console.log("Received SIGINT signal");
+  subscriptionPollingService.stop();
+  process.exit(0);
+});
+
+// Export the event handler
+export { processTransferEvent };
 
 main().catch(console.error);
