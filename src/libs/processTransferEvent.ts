@@ -6,7 +6,7 @@ import { addPartyCards } from "./manageFamAuthority/addPartyCards";
 export const processTransferEvent = async (log: Log) => {
   try {
     if (log.topics.length !== 4) {
-      return; // Skip non-ERC721 transfers
+      return; // Skip non-Hypersub NFT transfers
     }
 
     const { args } = decodeEventLog({
@@ -18,7 +18,7 @@ export const processTransferEvent = async (log: Log) => {
 
     // Type guard to ensure we have the NFT transfer event args
     if (!("tokenId" in args)) {
-      return; // Skip if not a token transfer
+      return; // Skip if not a Hypersub NFT transfer
     }
 
     // Get associated parties for this hypersub
