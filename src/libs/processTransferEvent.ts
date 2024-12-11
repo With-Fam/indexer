@@ -1,7 +1,7 @@
 import { decodeEventLog, type Log } from "viem";
 import { HypersubAbi } from "../abis/HypersubAbi";
 import { getPartiesForHypersubSet } from "../libs/stack/getPartiesForHypersubSet";
-import { addPartyCards } from "./manageFamAuthority/addPartyCards";
+import { addPartyCardsForSubscriber } from "./manageFamAuthority/addPartyCardsForSubscriber";
 
 export const processTransferEvent = async (log: Log) => {
   try {
@@ -25,6 +25,7 @@ export const processTransferEvent = async (log: Log) => {
     if (parties.length === 0) {
       return;
     }
+
     console.log("Processing Hypersub Transfer Event:", {
       from: args.from,
       to: args.to,
@@ -34,16 +35,8 @@ export const processTransferEvent = async (log: Log) => {
       address: log.address,
       associatedParties: parties.map((p) => p.party),
     });
-    for (const { party } of parties) {
-      try {
-        const txHash = await addPartyCards(party, args.to);
-        console.log(
-          `Successfully added party card for party ${party}, transaction: ${txHash}`
-        );
-      } catch (error) {
-        console.error(`Failed to add party card for party ${party}:`, error);
-      }
-    }
+
+    await addPartyCardsForSubscriber(parties, args.to);
   } catch (error) {
     console.error("Error processing transfer event:", error);
     console.debug("Raw log data:", {
