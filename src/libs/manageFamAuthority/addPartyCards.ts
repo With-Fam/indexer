@@ -4,6 +4,7 @@ import { MANAGE_FAM_AUTHORITY_ADDRESS } from "libs/consts";
 import { publicClient } from "libs/viem/publicClient";
 import { Address } from "viem";
 import { account } from "libs/viem/wallet";
+import { config } from "utils/config";
 
 export const addPartyCards = async (
   partyAddress: Address,
@@ -19,7 +20,7 @@ export const addPartyCards = async (
 
     const { request } = await publicClient.simulateContract({
       account,
-      address: MANAGE_FAM_AUTHORITY_ADDRESS,
+      address: config.contracts.manageFamAuthority,
       abi: ManageFamAuthorityAbi,
       functionName: "addPartyCards",
       args: [

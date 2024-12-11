@@ -1,6 +1,7 @@
 import { decodeEventLog, type Log } from "viem";
 import { HypersubAbi } from "../abis/HypersubAbi";
 import { getPartiesForHypersubSet } from "../libs/stack/getPartiesForHypersubSet";
+import { addPartyCards } from "./manageFamAuthority/addPartyCards";
 
 export const processTransferEvent = async (log: Log) => {
   try {
@@ -39,7 +40,18 @@ export const processTransferEvent = async (log: Log) => {
       associatedParties: parties.map((p) => p.party),
     });
 
-    // TODO: Call addPartyCards for each associated party (will be implemented in step 5)
+    // Add party cards for each associated party
+    for (const { party } of parties) {
+      try {
+        const txHash = await addPartyCards(party, args.to);
+        console.log(
+          `Successfully added party card for party ${party}, transaction: ${txHash}`
+        );
+      } catch (error) {
+        console.error(`Failed to add party card for party ${party}:`, error);
+        // Continue processing other parties even if one fails
+      }
+    }
   } catch (error) {
     console.error("Error processing transfer event:", error);
     console.debug("Raw log data:", {
