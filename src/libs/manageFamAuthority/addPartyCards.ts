@@ -1,6 +1,5 @@
 import { walletClient } from "libs/viem/wallet";
 import { ManageFamAuthorityAbi } from "abis/ManageFamAuthorityAbi";
-import { MANAGE_FAM_AUTHORITY_ADDRESS } from "libs/consts";
 import { publicClient } from "libs/viem/publicClient";
 import { Address } from "viem";
 import { account } from "libs/viem/wallet";
