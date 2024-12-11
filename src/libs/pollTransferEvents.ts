@@ -37,7 +37,7 @@ export const pollTransferEvents = async (
         });
 
         for (const log of logs) {
-          await processTransferEvent(log);
+          await processTransferEvent(log, client?.chain?.id);
         }
 
         latestProcessedBlock = currentBlock;

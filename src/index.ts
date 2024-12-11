@@ -3,6 +3,7 @@ import { handleHypersubSet } from "./handlers/HypersubSetHandler";
 import { config } from "./utils/config";
 import { watchNetworkEvents } from "./services/eventWatcher";
 import { startEventListeners } from "./services/rpcEventListener";
+import { SubscriptionPollingService } from "./services/subscriptionPollingService";
 
 async function main() {
   const registry = new EventHandlerRegistry();
@@ -24,11 +25,16 @@ async function main() {
       startEventListeners(),
     ]);
 
-    // Cleanup function for both WebSocket and RPC connections
+    // Initialize and start subscription polling service
+    const subscriptionPollingService = new SubscriptionPollingService();
+    subscriptionPollingService.start();
+
+    // Cleanup function for all services
     const cleanup = () => {
       console.log("Cleaning up connections...");
       unwatchWebSocket.forEach((unwatch) => unwatch());
       unwatchTransfer();
+      subscriptionPollingService.stop();
       process.exit(0);
     };
 
@@ -39,7 +45,11 @@ async function main() {
     console.log("Watching for new events. Press Ctrl+C to exit.");
   } catch (error) {
     console.error("Error in indexer:", error);
+    process.exit(1);
   }
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error("Fatal error:", error);
+  process.exit(1);
+});

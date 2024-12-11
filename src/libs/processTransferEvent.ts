@@ -2,8 +2,9 @@ import { decodeEventLog, type Log } from "viem";
 import { HypersubAbi } from "../abis/HypersubAbi";
 import { getPartiesForHypersubSet } from "../libs/stack/getPartiesForHypersubSet";
 import { addPartyCardsForSubscriber } from "./manageFamAuthority/addPartyCardsForSubscriber";
+import trackSubscriptionExtended from "./stack/trackSubscriptionExtended";
 
-export const processTransferEvent = async (log: Log) => {
+export const processTransferEvent = async (log: Log, chainId: number) => {
   try {
     if (log.topics.length !== 4) {
       return; // Skip non-Hypersub NFT transfers
@@ -37,6 +38,15 @@ export const processTransferEvent = async (log: Log) => {
     });
 
     await addPartyCardsForSubscriber(parties, args.to);
+
+    // Track subscription extended event
+    await trackSubscriptionExtended({
+      event: {
+        args,
+        chainId,
+        log,
+      },
+    });
   } catch (error) {
     console.error("Error processing transfer event:", error);
     console.debug("Raw log data:", {
