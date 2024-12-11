@@ -2,6 +2,7 @@ import { decodeEventLog, type Log } from "viem";
 import { HypersubAbi } from "../abis/HypersubAbi";
 import { getPartiesForHypersubSet } from "../libs/stack/getPartiesForHypersubSet";
 import { addPartyCardsForSubscriber } from "./manageFamAuthority/addPartyCardsForSubscriber";
+import trackSubscriptionExtended from "./stack/trackSubscriptionExtended";
 
 export const processTransferEvent = async (log: Log) => {
   try {
@@ -37,6 +38,21 @@ export const processTransferEvent = async (log: Log) => {
     });
 
     await addPartyCardsForSubscriber(parties, args.to);
+
+    // Track subscription extended event
+    await trackSubscriptionExtended({
+      event: {
+        args,
+        log,
+      },
+      context: {
+        client: {
+          chain: {
+            id: log.chainId || 1, // Default to mainnet if chainId not available
+          },
+        },
+      },
+    });
   } catch (error) {
     console.error("Error processing transfer event:", error);
     console.debug("Raw log data:", {
