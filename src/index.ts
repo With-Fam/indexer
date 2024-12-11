@@ -3,7 +3,6 @@ import { handleHypersubSet } from "./handlers/HypersubSetHandler";
 import { config } from "./utils/config";
 import { watchNetworkEvents } from "./services/eventWatcher";
 import { startEventListeners } from "./services/rpcEventListener";
-import { processTransferEvent } from "./libs/processTransferEvent";
 import { SubscriptionPollingService } from "./services/subscriptionPollingService";
 
 async function main() {
@@ -26,11 +25,16 @@ async function main() {
       startEventListeners(),
     ]);
 
-    // Cleanup function for both WebSocket and RPC connections
+    // Initialize and start subscription polling service
+    const subscriptionPollingService = new SubscriptionPollingService();
+    subscriptionPollingService.start();
+
+    // Cleanup function for all services
     const cleanup = () => {
       console.log("Cleaning up connections...");
       unwatchWebSocket.forEach((unwatch) => unwatch());
       unwatchTransfer();
+      subscriptionPollingService.stop();
       process.exit(0);
     };
 
@@ -41,27 +45,11 @@ async function main() {
     console.log("Watching for new events. Press Ctrl+C to exit.");
   } catch (error) {
     console.error("Error in indexer:", error);
+    process.exit(1);
   }
 }
 
-// Start the subscription polling service
-const subscriptionPollingService = new SubscriptionPollingService();
-subscriptionPollingService.start();
-
-// Handle process termination
-process.on("SIGTERM", () => {
-  console.log("Received SIGTERM signal");
-  subscriptionPollingService.stop();
-  process.exit(0);
+main().catch((error) => {
+  console.error("Fatal error:", error);
+  process.exit(1);
 });
-
-process.on("SIGINT", () => {
-  console.log("Received SIGINT signal");
-  subscriptionPollingService.stop();
-  process.exit(0);
-});
-
-// Export the event handler
-export { processTransferEvent };
-
-main().catch(console.error);
