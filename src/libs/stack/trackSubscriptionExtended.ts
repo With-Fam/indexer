@@ -1,5 +1,6 @@
 import { stack } from "./client";
-import getExpiration from "libs/hypersub/getExpiration";
+import getExpiration from "../hypersub/getExpiration";
+import { IndexerParams } from "../../types/indexer";
 
 const trackSubscriptionExtended = async ({ event, context }: IndexerParams) => {
   const subscriber = (event.args as any).to;
