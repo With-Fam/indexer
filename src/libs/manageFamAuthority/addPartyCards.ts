@@ -18,16 +18,20 @@ export const addPartyCards = async (
       partyAddress
     );
 
+    const newPartyMembers = [subscriber];
+    const newPartyVotingPower = [1n];
+    const newPartyDelegates = [subscriber];
+
     const { request } = await publicClient.simulateContract({
       account,
       address: config.contracts.manageFamAuthority,
       abi: ManageFamAuthorityAbi,
       functionName: "addPartyCards",
       args: [
-        partyAddress, // party address
-        [subscriber], // new party members (just the subscriber)
-        [1n], // voting power (1 for the subscriber)
-        [subscriber], // initial delegate (self-delegation)
+        partyAddress,
+        newPartyMembers,
+        newPartyVotingPower,
+        newPartyDelegates,
       ],
     });
 
@@ -47,6 +51,6 @@ export const addPartyCards = async (
       "Error executing addPartyCards:",
       error?.shortMessage || error?.message || error
     );
-    throw error; // Re-throw to allow caller to handle the error
+    throw error;
   }
 };
