@@ -4,7 +4,7 @@ import { getPartiesForHypersubSet } from "../libs/stack/getPartiesForHypersubSet
 import { addPartyCardsForSubscriber } from "./manageFamAuthority/addPartyCardsForSubscriber";
 import trackSubscriptionExtended from "./stack/trackSubscriptionExtended";
 
-export const processTransferEvent = async (log: Log) => {
+export const processTransferEvent = async (log: Log, chainId: number) => {
   try {
     if (log.topics.length !== 4) {
       return; // Skip non-Hypersub NFT transfers
@@ -43,14 +43,8 @@ export const processTransferEvent = async (log: Log) => {
     await trackSubscriptionExtended({
       event: {
         args,
+        chainId,
         log,
-      },
-      context: {
-        client: {
-          chain: {
-            id: log.chainId || 1, // Default to mainnet if chainId not available
-          },
-        },
       },
     });
   } catch (error) {

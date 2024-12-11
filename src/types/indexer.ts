@@ -7,17 +7,9 @@ export type Event = {
     [key: string]: any;
   };
   log: Log;
-};
-
-export type Context = {
-  client: {
-    chain: {
-      id: number;
-    };
-  };
+  chainId: number;
 };
 
 export type IndexerParams = {
   event: Event;
-  context: Context;
 };
