@@ -14,7 +14,6 @@ export const addPartyCardsForSubscriber = async (
       );
     } catch (error) {
       console.error(`Failed to add party card for party ${party}:`, error);
-      // Continue processing other parties even if one fails
     }
   }
 };
