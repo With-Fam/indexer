@@ -1,6 +1,6 @@
 import { checkSubscriptions } from "../libs/hypersub/checkSubscriptions";
 
-const POLLING_INTERVAL = 1000 * 60 * 5; // 5 minutes
+const POLLING_INTERVAL = 1000 * 60 * 1; // 1 minute
 
 export class SubscriptionPollingService {
   private intervalId: NodeJS.Timeout | null = null;
